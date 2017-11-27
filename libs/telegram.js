@@ -94,7 +94,12 @@ var got_text_message = (message) => {
   var command = parts[0]
   if(command in text_message_hooks){
     parts.splice(0,1)
-    text_message_hooks[command].callback(parts, message.message.chat.first_name || 'NA', message.message.chat.username || 'NA', message.message.chat.id, message)
+    text_message_hooks[command].callback(
+      parts,
+      message.message.chat.first_name || 'NA',
+      message.message.chat.username ||'NA',
+      message.message.chat.id,
+      message)
   }else{
     if(any_text_message_hook_method)
       any_text_message_hook_method(
@@ -112,7 +117,13 @@ var got_callback_message = (message) => {
   var command = parts[0]
   if(command in callback_message_hooks){
     parts.splice(0,1)
-    callback_message_hooks[command].callback(parts, message.callback_query.message.chat.first_name || 'NA', message.callback_query.message.chat.username || 'NA', message.callback_query.message.chat.id, message)
+    callback_message_hooks[command].callback(
+      parts,
+      message.callback_query.message.chat.first_name || 'NA',
+      message.callback_query.message.chat.username || 'NA',
+      message.callback_query.message.chat.id,
+      message
+    )
   }else{
     if(any_callback_hook_method)
       any_callback_hook_method(
@@ -157,6 +168,7 @@ module.exports = {
   start,
 
   on_text,
+  on_callback,
   on_any_text,
   on_any_callback,
 

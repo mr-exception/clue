@@ -6,9 +6,10 @@ var Schema = mongoose.Schema
 
 var schema = new Schema({
   name: {type: String, required: true},
-  id: {type: String, required: true},
+  chat_id: {type: String, required: true},
   username: {type: String, required: true},
   score: {type: Number, required: true, default: 0},
+  coins: {type: Number, required: true, default: 1000},
   status: {
     type: Number,
     enum: [

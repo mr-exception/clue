@@ -25,6 +25,8 @@
   "dependencies": {
     "mongodb": "^2.2.33",
     "mongoose": "^4.13.5",
-    "request": "^2.83.0"
+    "mongoose-unique-validator": "^1.0.6",
+    "request": "^2.83.0",
+    "require-dir": "^0.3.2"
   }
 }
