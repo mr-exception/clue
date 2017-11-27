@@ -17,6 +17,10 @@ schema.init(database)
 telegram.set_token(token)
 telegram.start()
 
+/*
+  first message every user sends
+  there is registration and ack here
+*/
 telegram.on_text('/start', (args, name, username, chat_id, message) => {
   var player_model = new schema.models.player({name, username, chat_id})
   player_model.save((err, player_db) => {
@@ -34,6 +38,9 @@ telegram.on_text('/start', (args, name, username, chat_id, message) => {
   })
 })
 
+/*
+  just shows help message
+*/
 telegram.on_text('/help', (args, name, username, chat_id, message) => {
   telegram.send_text_message(chat_id, replace_all(messages_list.help.fa, {}), {
     reply_markup:{
@@ -45,6 +52,9 @@ telegram.on_text('/help', (args, name, username, chat_id, message) => {
   }, () => {})
 })
 
+/*
+  just shows users profile informations
+*/
 telegram.on_text('/profile', (args, name, username, chat_id, message) => {
   schema.models.player.findOne({chat_id}, (err, player_db) => {
     if(err)
@@ -59,6 +69,12 @@ telegram.on_text('/profile', (args, name, username, chat_id, message) => {
   
 })
 
+/*
+  ## have to be designed
+  shows the top ten players in bot
+*/
 telegram.on_text('/ranks', (args, name, username, chat_id, message) => {
   telegram.send_text_message(chat_id, 'rank data', {}, () => {})
 })
+
+// telegram.on_callback('__create_game', ())
