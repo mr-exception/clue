@@ -77,4 +77,6 @@ telegram.on_text('/ranks', (args, name, username, chat_id, message) => {
   telegram.send_text_message(chat_id, 'rank data', {}, () => {})
 })
 
-// telegram.on_callback('__create_game', ())
+telegram.on_callback('__create_game', (args, name, username, chat_id, message) => {
+  
+})

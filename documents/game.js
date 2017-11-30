@@ -5,6 +5,7 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
 var schema = new Schema({
+  bet: {type: Number, required: true},
   players: [{type: Object}],
   /*
     { chat_id, is_my_turn, my_role }
