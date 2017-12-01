@@ -2,11 +2,12 @@
 var fs = require('fs')
 var mongoose = require('mongoose')
 // my libraries
-var {replace_all} = require('./libs/string_functions.js')
+var {replace_all, parse_to_number} = require('./libs/string_functions.js')
 const token = '473532174:AAFf1H5S4lW87W82r-kEOLdBTGyF2rkR0v4'
 const telegram = require('./libs/telegram.js')
 var schema = require('./schema.js')
 var messages_list = require('./libs/messages.js')
+var statera = require('./libs/stateras.js')
 
 console.log('loading database schemas')
 
@@ -78,5 +79,35 @@ telegram.on_text('/ranks', (args, name, username, chat_id, message) => {
 })
 
 telegram.on_callback('__create_game', (args, name, username, chat_id, message) => {
+  schema.models.player.findOne({status: 1, chat_id}, (err, user_db) => {
+    if(!err && user_db){
+      statera.submit(chat_id, {state: 'BET'})
+      telegram.send_text_message(chat_id, replace_all(messages_list.bet.fa, {
+        coins: user_db.coins
+      }), {}, () => {
+        console.log(`game started by ${name}`)
+      })
+    }
+  })
+})
+
+telegram.on_any_text((text, name, username, chat_id, message) => {
+  schema.models.player.findOne({status: 1, chat_id}, (err, user_db) => {
+    if(!err && user_db){
+      var state = statera.get(chat_id)
+      if(state.state == 'BET'){
+        var bet = parse_to_number(text)
+        if(bet == NaN){
+          console.log('failed in bet')
+        }else if(bet > user_db.coins){
+          console.log('not enough money!')
+        }else{
+          console.log(`game with bet ${bet} by ${name}(${chat_id})`)
+        }
+      }else{
+        console.log(`message from ${name} => ${text}`)
+      }
+    }
+  })
   
 })
