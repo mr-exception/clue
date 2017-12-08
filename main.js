@@ -23,7 +23,7 @@ telegram.start()
   there is registration and ack here
 */
 telegram.on_text('/start', (args, name, username, chat_id, message) => {
-  var player_model = new schema.models.player({name, username, chat_id})
+  var player_model = new schema.models.player({name, username, _id: chat_id})
   player_model.save((err, player_db) => {
     telegram.send_text_message(chat_id, replace_all(messages_list.hi.fa, {name}), {
         reply_markup:{
@@ -57,7 +57,7 @@ telegram.on_text('/help', (args, name, username, chat_id, message) => {
   just shows users profile informations
 */
 telegram.on_text('/profile', (args, name, username, chat_id, message) => {
-  schema.models.player.findOne({chat_id}, (err, player_db) => {
+  schema.models.player.findOne({_id: chat_id}, (err, player_db) => {
     if(err)
       console.log(`player ${chat_id} not found!!`)
     else
@@ -79,30 +79,53 @@ telegram.on_text('/ranks', (args, name, username, chat_id, message) => {
 })
 
 telegram.on_callback('__create_game', (args, name, username, chat_id, message) => {
-  schema.models.player.findOne({status: 1, chat_id}, (err, user_db) => {
+  schema.models.player.findOne({status: 1, _id: chat_id}, (err, user_db) => {
     if(!err && user_db){
       statera.submit(chat_id, {state: 'BET'})
       telegram.send_text_message(chat_id, replace_all(messages_list.bet.fa, {
         coins: user_db.coins
       }), {}, () => {
-        console.log(`game started by ${name}`)
+        console.log(`game config started by ${name}`)
       })
+    }else{
+      console.log('player not found')
     }
   })
 })
 
 telegram.on_any_text((text, name, username, chat_id, message) => {
-  schema.models.player.findOne({status: 1, chat_id}, (err, user_db) => {
+  schema.models.player.findOne({status: 1, _id: chat_id}, (err, user_db) => {
     if(!err && user_db){
       var state = statera.get(chat_id)
-      if(state.state == 'BET'){
+      if(!state){
+
+      }else if(state.state == 'BET'){
         var bet = parse_to_number(text)
         if(bet == NaN){
           console.log('failed in bet')
         }else if(bet > user_db.coins){
-          console.log('not enough money!')
+          telegram.send_text_message(chat_id, replace_all(messages_list.not_enough_money.fa, {}), {}, () => {})
         }else{
-          console.log(`game with bet ${bet} by ${name}(${chat_id})`)
+          (new schema.models.game({
+            bet,
+            players: [user_db],
+            team_a: [], team_b: [],
+            rounds: []
+          })).save((err, game_db) => {
+            if(err)
+              console.log(err.errors)
+            else{
+              statera.submit(chat_id, {
+                state: 'WAITING',
+                game_code: game_db._id,
+              })
+              telegram.send_text_message(chat_id, replace_all(messages_list.game_started.fa, {
+                _id: game_db._id
+              }), {}, () => {
+                console.log(`game with bet ${bet} by ${name}(${chat_id})`)
+              })
+            }
+          })
         }
       }else{
         console.log(`message from ${name} => ${text}`)
