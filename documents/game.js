@@ -6,7 +6,21 @@ var Schema = mongoose.Schema
 
 var schema = new Schema({
   bet: {type: Number, required: true},
-  players: [{type: Object}],
+  players: [{
+    _id: {type: String, required: true, index: true},
+    name: {type: String, required: true},
+    username: {type: String, required: true},
+    score: {type: Number, required: true, default: 0},
+    coins: {type: Number, required: true, default: 1000},
+    status: {
+      type: Number,
+      enum: [
+        1, // active
+        2, // deactive
+      ],
+      default: 1
+    }
+  }],
   /*
     { chat_id, is_my_turn, my_role }
   */
@@ -20,10 +34,39 @@ var schema = new Schema({
       5, // waiting for A help
       6, // waiting for A guess
       7, // game canceled
-    ]
+    ],
+    default: 1
   },
-  team_a: [{type: Object}],
-  team_b: [{type: Object}],
+  team_a: [{
+    _id: {type: String, required: true, index: true},
+    name: {type: String, required: true},
+    username: {type: String, required: true},
+    score: {type: Number, required: true, default: 0},
+    coins: {type: Number, required: true, default: 1000},
+    status: {
+      type: Number,
+      enum: [
+        1, // active
+        2, // deactive
+      ],
+      default: 1
+    }
+  }],
+  team_b: [{
+    _id: {type: String, required: true, index: true},
+    name: {type: String, required: true},
+    username: {type: String, required: true},
+    score: {type: Number, required: true, default: 0},
+    coins: {type: Number, required: true, default: 1000},
+    status: {
+      type: Number,
+      enum: [
+        1, // active
+        2, // deactive
+      ],
+      default: 1
+    }
+  }],
 
   rounds: [{
     word: {type: String, required: true},

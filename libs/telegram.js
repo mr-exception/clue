@@ -136,7 +136,7 @@ var got_callback_message = (message) => {
   }
 }
 var send_text_message = (chat_id, text, options, callback) => {
-  send_request('sendMessage', Object.assign({chat_id, text}, options),
+  send_request('sendMessage', Object.assign({chat_id, text, parse_mode: 'HTML'}, options),
     (response) => {
       if(response.ok)
         return callback(response.result)

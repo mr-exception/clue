@@ -5,8 +5,8 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
 var schema = new Schema({
+  _id: {type: String, required: true, index: true},
   name: {type: String, required: true},
-  chat_id: {type: String, required: true},
   username: {type: String, required: true},
   score: {type: Number, required: true, default: 0},
   coins: {type: Number, required: true, default: 1000},
